@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>nginx反代设置</title>
+    <link href="/2023/04/14/nginx%E5%8F%8D%E4%BB%A3%E8%AE%BE%E7%BD%AE/"/>
+    <url>/2023/04/14/nginx%E5%8F%8D%E4%BB%A3%E8%AE%BE%E7%BD%AE/</url>
+    
+    <content type="html"><![CDATA[<p>一直习惯于使用宝塔的控制面板，最近发现暴露出弊端，不仅仅是网络上说的安全问题，同时自己的服务器属于底层低配机器，根本折腾不来宝塔，加上宝塔虽然方便，但是不明白具体配置文件编写，在这里记录一下：</p><h2 id="主要是修改-x2F-etc-x2F-nginx-x2F-nginx-conf"><a href="#主要是修改-x2F-etc-x2F-nginx-x2F-nginx-conf" class="headerlink" title="主要是修改&#x2F;etc&#x2F;nginx&#x2F;nginx.conf"></a>主要是修改&#x2F;etc&#x2F;nginx&#x2F;nginx.conf</h2><figure class="highlight htmlbars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs htmlbars"><span class="language-xml"># 反代docker开的网站</span><br><span class="language-xml">server &#123;</span><br><span class="language-xml">    listen  80;</span><br><span class="language-xml">    server_name 域名(website);</span><br><span class="language-xml">    location / &#123;</span><br><span class="language-xml">            proxy_pass http://127.0.0.1:81;</span><br><span class="language-xml">            proxy_buffering off; # 防止一大段输出（这里主要是配置chatGPT客户端中打字机效果）</span><br><span class="language-xml">            proxy_set_header Host $proxy_host; # 修改转发请求头，让端口的应用可以受到真实的请求</span><br><span class="language-xml">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="language-xml">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="language-xml">    &#125;</span><br><span class="language-xml">    # 防止爬虫抓取</span><br><span class="language-xml">    if ($http_user_agent ~* &quot;360Spider|JikeSpider|Spider|spider|bot|Bot|2345Explorer|curl|wget|webZIP|qihoobot|Baiduspider|Googlebot|Googlebot-Mobile|Googlebot-Image|Mediapartners-Google|Adsbot-Google|Feedfetcher-Google|Yahoo! Slurp|Yahoo! Slurp China|YoudaoBot|Sosospider|Sogou spider|Sogou web spider|MSNBot|ia_archiver|Tomato Bot|NSPlayer|bingbot&quot;) &#123;</span><br><span class="language-xml">    return 403;</span><br><span class="language-xml">    &#125;</span><br><span class="language-xml">&#125;</span><br><span class="language-xml">server &#123;</span><br><span class="language-xml">    listen 80;</span><br><span class="language-xml">    server_name 域名(website);</span><br><span class="language-xml">    location / &#123;</span><br><span class="language-xml">            proxy_pass http://127.0.0.1:82;</span><br><span class="language-xml">            proxy_set_header Host $proxy_host; # 修改转发请求头，让端口的应用可以受到真实的请求</span><br><span class="language-xml">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="language-xml">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="language-xml">    &#125;</span><br><span class="language-xml">&#125;</span><br></code></pre></td></tr></table></figure><p>将里面的端口号和域名(website)修改成对应的网址和端口即可，最后需要重置配置文件：</p><blockquote><p><strong>nginx -s reload</strong></p></blockquote><h2 id="证书申请"><a href="#证书申请" class="headerlink" title="证书申请"></a>证书申请</h2><p>nginx占用了80端口，申请证书时可以先关闭nginx，然后进行acme申请：</p><blockquote><p><strong>acme.sh –issue -d 域名 –standalone -k ec-256</strong></p></blockquote>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
