@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://blog.pwolf.site/img/openai.jpg">
 <meta property="article:published_time" content="2023-05-18T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-05-19T07:55:45.868Z">
+<meta property="article:modified_time" content="2023-05-19T09:29:59.249Z">
 <meta property="article:author" content="pwolf">
 <meta property="article:tag" content="Linux">
 <meta property="article:tag" content="ChatGPT">
@@ -72,7 +72,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"blog.pwolf.site","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"������","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"blog.pwolf.site","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"♡","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -302,15 +302,15 @@
 <ol>
 <li>API Key不一样，OpenAI的key具有’sk-‘，而Azure没有，修改行数为app&#x2F;api&#x2F;common.ts中的第28行，删除’sk-‘即可：</li>
 </ol>
-<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/KFw7LmIYGQ/28%E8%A1%8C.jpg" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/KFw7LmIYGQ/28%E8%A1%8C.jpg" srcset="/img/loading.gif" lazyload></p>
 <ol start="2">
 <li>余额查询，Azure并不需要查询余额，所有直接删掉这一块内容。将app&#x2F;locales文件夹中的所有ts的143行至151行注释：</li>
 </ol>
-<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/PIicbH7Z60/143.jpg" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/PIicbH7Z60/143.jpg" srcset="/img/loading.gif" lazyload></p>
 <ol start="3">
 <li>也是余额相关的，把app&#x2F;components&#x2F;settings.tsx的516行至538行注释掉：</li>
 </ol>
-<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/nIETTrE6U6/516.jpg" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/nIETTrE6U6/516.jpg" srcset="/img/loading.gif" lazyload></p>
 <blockquote>
 <p><strong>不想进一步修改界面，其实完成第一步就可以了，然后容器中部署</strong></p>
 </blockquote>
@@ -319,7 +319,7 @@
 <li>部署启动命令：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ docker run -d -p 3000:3000 -e BASE_URL=<span class="hljs-string">&#x27;上面cf项目生成的网址&#x27;</span> -e OPENAI_API_KEY=<span class="hljs-string">&quot;azure中生成的密钥&quot;</span> -e CODE=<span class="hljs-string">&quot;页面访问密码&quot;</span> 上一步构建的镜像名称<br></code></pre></td></tr></table></figure></li>
 </ol>
 <p>最终完成部署后的样子如下，如果需要部署网页进行反代，参见<a href="https://blog.pwolf.site/2023/04/14/nginx%E5%8F%8D%E4%BB%A3%E8%AE%BE%E7%BD%AE/">nginx反代设置</a>。</p>
-<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/tCCwkOOrWi/end.jpg" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<p><img src="https://driver.pwolf.tk/?/images/2023/05/19/tCCwkOOrWi/end.jpg" srcset="/img/loading.gif" lazyload></p>
 
                 
               </div>
