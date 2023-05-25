@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>docker容器的代理设置</title>
+    <link href="/2023/05/25/docker%E7%9A%84%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE/"/>
+    <url>/2023/05/25/docker%E7%9A%84%E4%BB%A3%E7%90%86%E8%AE%BE%E7%BD%AE/</url>
+    
+    <content type="html"><![CDATA[<h1 id="docker容器的代理设置"><a href="#docker容器的代理设置" class="headerlink" title="docker容器的代理设置"></a>docker容器的代理设置</h1><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>前段时间为办公室部署完成了ChatGPT，为了端口的使用方便，不想占用太多的80端口，采用了docker部署界面，然后使用nginx反代，思路很清晰，但是在代理上设置遇到了一点困难。这里记录一下遇到的问题和最终解决方案，其实最终呢，并没有实现，但是基本上理解了原理。</p><h3 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h3><p>使用host模式启动容器服务。而使用 host 模式启动，Docker 容器与宿主机共享同一个网络命名空间，即 Docker 容器将直接使用宿主机的网络。这意味着 Docker 容器可以使用宿主机的 IP 地址和端口，可以直接访问宿主机上的网络服务。然而，host 模式也存在一些限制，例如 Docker 容器之间无法直接通信，Docker 容器的网络性能可能会受到影响。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ docker run -itd --name chatgpt --network host -e APIKEY=sk-xxxxxx -e MODEL=<span class="hljs-string">&quot;gpt-3.5-turbo&quot;</span>  -e HTTP_PROXY=<span class="hljs-string">&quot;http://127.0.0.1:1080&quot;</span>  --restart=always 镜像:latest<br></code></pre></td></tr></table></figure><p>这样容器就能直接访问到宿主机的 1080 了。但是因为这种模式的局限性，因此实际生产当中几乎没有人会用这种方式，所以不推荐使用方案一，推荐方案二。</p><h3 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h3><p>这个方案是docker官方提供了一种支持方案，可通过指向 <code>host.docker.internal</code> 来指向宿主机的 IP，详见<a href="https://docs.docker.com/desktop/networking/#i-want-to-connect-from-a-container-to-a-service-on-the-host">官方手册</a>：</p><p><img src="https://driver.pwolf.tk/?/images/2023/05/25/kIT0XmYbON/docker.jpg"></p><p>按照这个策略，晚上有很多这种设置方案，于是写了一个docker-compose，配置文件如下编写：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">version:</span> <span class="hljs-string">&quot;2.0&quot;</span><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">chatgpt:</span><br>    <span class="hljs-attr">image:</span>  <span class="hljs-comment"># 镜像名，可以使用阿里云仓库的备用镜像</span><br>    <span class="hljs-attr">container_name:</span>  <span class="hljs-comment"># 容器名（可随意更改）</span><br>    <span class="hljs-attr">hostname:</span>   <span class="hljs-comment"># 主机名（可随意更改）</span><br>    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span>  <span class="hljs-comment"># 开机自启</span><br>    <span class="hljs-attr">tty:</span> <span class="hljs-literal">true</span><br>    <span class="hljs-attr">network_mode:</span> <span class="hljs-string">bridge</span>  <span class="hljs-comment"># 容器网络类型，如果是旁路由可能需要切换为 host 类型（桥接），默认为 NAT</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-number">5678</span><span class="hljs-string">:5678</span>  <span class="hljs-comment"># 端口映射，格式为 &quot;主机端口:容器端口&quot;，主机端口号可自定义，容器端口用来访问控制面板不可修改</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">APIKEY=sk-xxxx</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">MODEL=&quot;gpt-3.5-turbo-0301&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">HTTP_PROXY=http://host.docker.internal:1080</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">HTTPS_PROXY=https://host.docker.internal:1080</span><br>    <span class="hljs-attr">extra_hosts:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">host.docker.internal:host-gateway</span><br></code></pre></td></tr></table></figure><p>终于部署好了，神奇的是 <code>localhost:5678</code> 打不开，这种走代理的模式居然只能后台运行。这是因为 <code>host.docker.internal</code> 是一个特殊的 DNS 名称，它只能在容器内部使用，用于访问宿主机上的服务。</p><p>后来发现可以进入容器内设置代理，于是注释掉<code>HTTP_PROXY</code>和<code>HTTPS_PROXY</code>两行，并将这两行写到容器内，用<code>export</code>写到<code>~/.bashrc</code>或者<code>/etc/profile</code>中，这样也可以解决问题。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux</tag>
+      
+      <tag>docker</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Azure的ChatGPT客户端搭建</title>
     <link href="/2023/05/19/Azure%E7%9A%84ChatGPT%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%90%AD%E5%BB%BA/"/>
     <url>/2023/05/19/Azure%E7%9A%84ChatGPT%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%90%AD%E5%BB%BA/</url>
