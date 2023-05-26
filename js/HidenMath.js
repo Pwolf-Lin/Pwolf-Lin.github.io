@@ -20,7 +20,7 @@ window.addEventListener("load", e => {
     HidenValine();
     //运行网站时间
    // setInterval("createtime()", 250);
-    rainbow();
+   // rainbow();
     //运行一句格言
     //hitokoto();
 });
@@ -28,7 +28,7 @@ window.addEventListener("load", e => {
 //底部运行时间设置
 function createtime() {
     var now = new Date();
-    var grt = new Date("02/05/2020 15:30:00");//此处修改你的建站时间或者网站上线时间
+    var grt = new Date("03/04/2023 15:30:00");//此处修改你的建站时间或者网站上线时间
     now.setTime(now.getTime() + 250);
     days = (now - grt) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
     hours = (now - grt) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
@@ -57,16 +57,16 @@ function hitokoto() {
 }
 
 //一朵彩虹
-function rainbow() {
-    fetch('https://api.eatrice.top')
-        .then(response => response.json())
-        .then(data => {
-            var rainbow = document.getElementById('rainbow');
-            rainbow.innerHTML = data.Content;
-            rainbow.href = "https://rainbow.eatrice.top/?ID=" + data.ID;
-        })
-        .catch(console.error)
-}
+//function rainbow() {
+//    fetch('https://api.eatrice.top')
+//        .then(response => response.json())
+//        .then(data => {
+//            var rainbow = document.getElementById('rainbow');
+//            rainbow.innerHTML = data.Content;
+//            rainbow.href = "https://rainbow.eatrice.top/?ID=" + data.ID;
+//        })
+//        .catch(console.error)
+//}
 
 // 运行一朵彩虹
 // rainbow();
