@@ -5,7 +5,8 @@ $(document).ready(function () {
         if (location.hash && location.hash == "#blog") return;
         if ($('.panel-cover').hasClass('panel-cover--collapsed')) return;
         $('.main-post-list').removeClass('hidden');
-        currentWidth = $('.panel-cover').width();
+       // currentWidth = $('.panel-cover').width();
+        currentWidth = window.innerWidth
         if (currentWidth < 960) {
             $('.panel-cover').addClass('panel-cover--collapsed');
         } else {

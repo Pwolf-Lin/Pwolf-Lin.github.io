@@ -107,5 +107,55 @@
   
   
   
+  <entry>
+    <title>python实现坐标点的系统转换</title>
+    <link href="/2023/04/04/python%E5%AE%9E%E7%8E%B0%E5%9D%90%E6%A0%87%E7%82%B9%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%BD%AC%E6%8D%A2/"/>
+    <url>/2023/04/04/python%E5%AE%9E%E7%8E%B0%E5%9D%90%E6%A0%87%E7%82%B9%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%BD%AC%E6%8D%A2/</url>
+    
+    <content type="html"><![CDATA[<p>此文已于2020年12月22日发布于<a href="https://blog.csdn.net/weixin_36135064/article/details/111562394?spm=1001.2014.3001.5502">CSDN</a></p><p>arcgis本来就不怎么会，加上好长时间没有使用，居然忘了怎么导点转坐标了，没办法，正好看到这篇文章，可以用python实现坐标系统的转换。查找了相关内容，编了一小段，可以快速实现坐标转换，十分完美！主要参见了知乎上的<a href="https://zhuanlan.zhihu.com/p/75000381">这篇文章</a>。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#coding:utf-8</span><br><br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> pyproj <span class="hljs-keyword">import</span> CRS<br><span class="hljs-keyword">from</span> pyproj <span class="hljs-keyword">import</span> Transformer<br><br><br>from_crs = CRS.from_epsg(<span class="hljs-number">4326</span>)  <span class="hljs-comment">#坐标系统从下面这个网址查询</span><br>to_crs = CRS.from_epsg(<span class="hljs-number">32649</span>)   <span class="hljs-comment">#https://developers.arcgis.com/javascript/3/jshelp/pcs.htm</span><br>input_file = <span class="hljs-string">&quot;./point.txt&quot;</span><br>output_file = <span class="hljs-string">&quot;./output.txt&quot;</span><br>transformer = Transformer.from_crs(from_crs,to_crs,always_xy=<span class="hljs-literal">True</span>)<br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(output_file,<span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> fo:<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(input_file,<span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> fi:<br>        <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>            line = fi.readline()     <span class="hljs-comment"># 逐行读取</span><br>            array=line.split()<br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> line:<br>                <span class="hljs-keyword">break</span><br>            <span class="hljs-keyword">else</span>:<br>                data = [ <span class="hljs-built_in">float</span>(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> array[<span class="hljs-number">1</span>:] ]<br>                <span class="hljs-built_in">print</span>(data)<br>                lon = data[<span class="hljs-number">0</span>]<br>                lat = data[<span class="hljs-number">1</span>]<br>                x,y = transformer.transform(lon,lat)<br>                fo.write(<span class="hljs-string">&quot;\t&quot;</span>.join([<span class="hljs-string">&quot;&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(array[<span class="hljs-number">0</span>]),<span class="hljs-string">&quot;&#123;:.6f&#125;&quot;</span>.<span class="hljs-built_in">format</span>(x),<span class="hljs-string">&quot;&#123;:.6f&#125;&quot;</span>.<span class="hljs-built_in">format</span>(y),<span class="hljs-string">&#x27;\n&#x27;</span>]))<br>            <br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;All Done&#x27;</span>)<br></code></pre></td></tr></table></figure><p>这是与arcgis转的结果的对比图：</p><p><img src="https://driver.pwolf.tk/images/2023/04/04/xF6AQ4pNWD/compare.jpg"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>nc地形数据的python转换实现tiff</title>
+    <link href="/2023/04/04/nc%E5%9C%B0%E5%BD%A2%E6%95%B0%E6%8D%AE%E7%9A%84python%E8%BD%AC%E6%8D%A2%E5%AE%9E%E7%8E%B0tiff/"/>
+    <url>/2023/04/04/nc%E5%9C%B0%E5%BD%A2%E6%95%B0%E6%8D%AE%E7%9A%84python%E8%BD%AC%E6%8D%A2%E5%AE%9E%E7%8E%B0tiff/</url>
+    
+    <content type="html"><![CDATA[<p>此文已于2020年7月21日发布于<a href="https://blog.csdn.net/weixin_36135064/article/details/107498637?spm=1001.2014.3001.5502">CSDN</a></p><p>之前做的一个海底地形的数据导入arcgis的问题，由于是全球的地形数据（精度为15弧秒），从<a href="https://www.gebco.net/data_and_products/gridded_bathymetry_data">GEBCO</a>下载获取，数据达到12G，在arcgis中转换也可以，但是实在是太慢，我的电脑i7-7700的转了一晚上没成功，后来看了好多arcgis的官方文档和网上的转化教程，改写成下面这一小段，速度很快，大约两小时即可完成。<br>我印象中有两篇参考的非官方文档给我提供了很大帮助，可惜找不到了，在此不能引用，但表示感谢！</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#coding=utf8</span><br><span class="hljs-comment"># Import system modules  </span><br><span class="hljs-keyword">import</span> arcpy  <br><span class="hljs-keyword">from</span> arcpy <span class="hljs-keyword">import</span> env  <br><span class="hljs-keyword">from</span> arcpy.sa <span class="hljs-keyword">import</span> *  <br><br><span class="hljs-comment"># Input data source  </span><br>arcpy.env.workspace = <span class="hljs-string">&quot;E:/ALL_change&quot;</span>  <br>arcpy.env.overwriteOutput = <span class="hljs-literal">True</span>  <br><br><span class="hljs-comment"># Set output folder  </span><br>OutputFolder = <span class="hljs-string">&quot;E:/ALL_change&quot;</span>  <br><br><span class="hljs-comment"># Loop through a list of files in the workspace  </span><br>filename = <span class="hljs-string">&quot;GEBCO_2019.nc&quot;</span>  <br><br><span class="hljs-comment">#for filename in NCfiles:  </span><br><br><span class="hljs-comment">#print(&quot;Processing: &quot; + filename)  </span><br><br>inNCfiles = arcpy.env.workspace + <span class="hljs-string">&quot;/&quot;</span> + filename  <br>fileroot = <span class="hljs-string">&quot;npr&quot;</span>+filename <br>variable = <span class="hljs-string">&quot;elevation&quot;</span>  <br>outRaster = OutputFolder + <span class="hljs-string">&quot;/&quot;</span> + fileroot  <br><br><span class="hljs-comment"># Process: Make NetCDF Raster Layer  </span><br>arcpy.MakeNetCDFRasterLayer_md(inNCfiles, <span class="hljs-string">&quot;elevation&quot;</span>, <span class="hljs-string">&quot;lon&quot;</span>, <span class="hljs-string">&quot;lat&quot;</span>, variable, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;BY_VALUE&quot;</span>)  <br><br><span class="hljs-comment"># Process: Copy Raster  </span><br>arcpy.CopyRaster_management(variable, outRaster + <span class="hljs-string">&quot;.tif&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;NONE&quot;</span>, <span class="hljs-string">&quot;NONE&quot;</span>, <span class="hljs-string">&quot;&quot;</span>)  <br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>学习</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
   
 </search>
